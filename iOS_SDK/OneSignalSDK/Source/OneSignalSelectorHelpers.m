@@ -111,29 +111,7 @@ void injectToProperClass(SEL newSel, SEL makeLikeSel, NSArray* delegateSubclasse
 }
 
 NSArray* ClassGetSubclasses(Class parentClass) {
-    int numClasses = objc_getClassList(NULL, 0);
-    int memSize = sizeof(Class) * numClasses;
-    Class *classes = (Class*)malloc(memSize);
-    if (classes == NULL && memSize) {
-        return [NSMutableArray array];
-    }
-    
-    objc_getClassList(classes, numClasses);
-    
-    NSMutableArray *result = [NSMutableArray array];
-    
-    for (NSInteger i = 0; i < numClasses; i++) {
-        Class superClass = classes[i];
-        
-        while(superClass && superClass != parentClass) {
-            superClass = class_getSuperclass(superClass);
-        }
-        
-        if (superClass)
-            [result addObject:classes[i]];
-    }
-    
-    free(classes);
-    
-    return result;
+  // Hack- we are not subclassing here so return the class that is passed in (which is the result we get anyway)
+  // This is to avoid calling obj_getClassList during `load` which is crashing
+  return [NSMutableArray arrayWithObject:parentClass];
 }
